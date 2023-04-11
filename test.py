@@ -1,23 +1,26 @@
 import socket
 import http.client as httplib
 import time
+from pymongo import MongoClient as Aurora
+from datetime import datetime
 
-websiteurl='44.204.145.80' 
+client=Aurora('localhost',27017)
+db=client['B4']
+c=db['Aurora']
+
+websiteurl='172.31.82.93' 
 metriname='metric name'  
 while True:
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((websiteurl, 5000))
         print('Website Active')
-        c=httplib.HTTPConnection(websiteurl,port=5000) 
-        c.request("madhu", '')
-        STAT=c.getresponse().status
-        print(STAT)
-        if STAT == 200 or STAT == 304:
-            print('Website Active')
-        if STAT == 405:
-            print('Resource Error')
     except Exception as e:
         print(e)
+        k={}
+        k['event']='Server Down'
+        k['status']='Error'
+        k['timestamp']=str(datetime.now())
+        c.insert_one(k)
     time.sleep(5)
 
