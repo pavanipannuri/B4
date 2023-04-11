@@ -1,18 +1,23 @@
 import socket
 import http.client as httplib
-websiteurl='www.makeskilled.com' 
+import time
+
+websiteurl='44.204.145.80' 
 metriname='metric name'  
-try:
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect((websiteurl, 80))
-    print('Website Active')
-except socket.error as e:
-    print(e)
-    if 'Connection refused' in e:
-        print('Connection Refused')
-else:
-        c=httplib.HTTPConnection(websiteurl) 
-        c.request("HEAD", '')
+while True:
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect((websiteurl, 5000))
+        print('Website Active')
+        c=httplib.HTTPConnection(websiteurl,port=5000) 
+        c.request("madhu", '')
         STAT=c.getresponse().status
+        print(STAT)
         if STAT == 200 or STAT == 304:
-             print('Website Active')
+            print('Website Active')
+        if STAT == 405:
+            print('Resource Error')
+    except Exception as e:
+        print(e)
+    time.sleep(5)
+
