@@ -3,6 +3,7 @@ import http.client as httplib
 import time
 from pymongo import MongoClient as Aurora
 from datetime import datetime
+import sendEmail as ses
 
 client=Aurora('localhost',27017)
 db=client['B4']
@@ -22,5 +23,6 @@ while True:
         k['status']='Error'
         k['timestamp']=str(datetime.now())
         c.insert_one(k)
+        ses.sendEmail('Website Monitoring Log','pavanipannuri@gmail.com',k['event'],k['status'])
     time.sleep(5)
 

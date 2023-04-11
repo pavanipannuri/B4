@@ -1,6 +1,7 @@
 from flask import Flask,render_template,request
 from pymongo import MongoClient as Aurora
 from datetime import datetime
+import sendEmail as ses
 
 app=Flask(__name__)
 
@@ -15,6 +16,7 @@ def homePage():
     k['status']='Normal'
     k['timestamp']=str(datetime.now())
     c.insert_one(k)
+    ses.sendEmail('Website Monitoring Log','pavanipannuri@gmail.com',k['event'],k['status'])
     return 'Server Online'
 
 
@@ -25,6 +27,7 @@ def pavani():
     k['status']='Normal'
     k['timestamp']=str(datetime.now())
     c.insert_one(k)
+    ses.sendEmail('Website Monitoring Log','pavanipannuri@gmail.com',k['event'],k['status'])
     a=request.args.get('name')
     b=int(request.args.get('batchid'))
     return 'Your name is {} and your batch id is {}'.format(a,b)
@@ -37,6 +40,7 @@ def handle_bad_request(e):
     k['status']='Error'
     k['timestamp']=str(datetime.now())
     c.insert_one(k)
+    ses.sendEmail('Website Monitoring Log','pavanipannuri@gmail.com',k['event'],k['status'])
     return 'bad request!', 400
 
 @app.errorhandler(500)
@@ -46,6 +50,7 @@ def handle_bad_request(e):
     k['status']='Error'
     k['timestamp']=str(datetime.now())
     c.insert_one(k)
+    ses.sendEmail('Website Monitoring Log','pavanipannuri@gmail.com',k['event'],k['status'])
     return '500 bad request!', 400
 
 
