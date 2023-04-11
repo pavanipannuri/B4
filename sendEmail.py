@@ -15,7 +15,7 @@ def sendEmail(sub,r,event,status):
     <p> Event: """+event+""".<br>
     Status: """+status+"""<br>
     Thanks, <br/>
-    Team B8<br>
+    Team B4<br>
     </p>
     </body>
     </html>
