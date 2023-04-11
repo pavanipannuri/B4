@@ -1,51 +1,26 @@
-import boto3
-import httplib
-import errno
 import socket
-import json
+import http.client as httplib
+import time
+from pymongo import MongoClient as Aurora
+from datetime import datetime
 
-def lambda_handler(event, context):
-    client = boto3.client('lambda')
-    websiteurl='www.sample.com' #enter your site url
-    metriname='metric name' #enter metric name 
+client=Aurora('localhost',27017)
+db=client['B4']
+c=db['Aurora']
+
+websiteurl='172.31.82.93' 
+metriname='metric name'  
+while True:
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.connect((websiteurl, 80))
-    except socket.error as e:
-        if 'Connection refused' in e:
-            response=client.invoke(
-                FunctionName='SendMetric', #paste real name of the lambda function you defined.
-                InvocationType='Event',
-                LogType='Tail',
-                Payload=json.dumps({"VAL": 100,"MNAM": metriname}) 
-            )
-            response=client.invoke(
-                FunctionName='RepairSystem',
-                InvocationType='Event',
-                LogType='Tail',
-                Payload=json.dumps({"MNAM": metriname})
-            )
-    else:
-        c=httplib.HTTPConnection(websiteurl) #for ssl use httplib.HTTPSConnection.
-        c.request("HEAD", '')
-        STAT=c.getresponse().status
-        if STAT == 200 or STAT == 304:
-            response=client.invoke(
-                FunctionName='SendMetric', #paste real name of the lambda function.
-                InvocationType='Event',
-                LogType='Tail',
-                Payload=json.dumps({"VAL": 200,"MNAM": metriname}) 
-            )
-        else:
-            response=client.invoke(
-                FunctionName='SendMetric',
-                InvocationType='Event',
-                LogType='Tail',
-                Payload=json.dumps({"VAL": 50,"MNAM": metriname}) 
-            )
-            response=client.invoke(
-                FunctionName='RepairSystem',
-                InvocationType='Event',
-                LogType='Tail',
-                Payload=json.dumps({"MNAM": metriname})
-            )
+        s.connect((websiteurl, 5000))
+        print('Website Active')
+    except Exception as e:
+        print(e)
+        k={}
+        k['event']='Server Down'
+        k['status']='Error'
+        k['timestamp']=str(datetime.now())
+        c.insert_one(k)
+    time.sleep(5)
+
